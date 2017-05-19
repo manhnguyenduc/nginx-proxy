@@ -11,7 +11,8 @@ RUN apt-get update \
 
 # Configure Nginx and apply fix for very long server names
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-RUN echo "worker_processes  4;" >> /etc/nginx/nginx.conf
+RUN sed -i -e "s/worker_processes  1/worker_processes  4/g" -e "s/worker_connections  1024;/worker_connections  4096;/g" /etc/nginx/nginx.conf
+
 RUN echo "worker_rlimit_nofile 30000;" >> /etc/nginx/nginx.conf \
  && sed -i 's/^http {/&\n    server_names_hash_bucket_size 128;/g' /etc/nginx/nginx.conf
 
