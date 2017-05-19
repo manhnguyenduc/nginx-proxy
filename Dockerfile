@@ -10,7 +10,9 @@ RUN apt-get update \
  && rm -r /var/lib/apt/lists/*
 
 # Configure Nginx and apply fix for very long server names
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+RUN echo "worker_processes  4;" >> /etc/nginx/nginx.conf
+RUN echo "worker_rlimit_nofile 30000;" >> /etc/nginx/nginx.conf \
  && sed -i 's/^http {/&\n    server_names_hash_bucket_size 128;/g' /etc/nginx/nginx.conf
 
 # std log
@@ -27,6 +29,7 @@ RUN wget https://github.com/jwilder/docker-gen/releases/download/$DOCKER_GEN_VER
  && tar -C /usr/local/bin -xvzf docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz \
  && rm /docker-gen-linux-amd64-$DOCKER_GEN_VERSION.tar.gz
 
+COPY 50x.html /etc/nginx/html/50x.html
 COPY . /app/
 WORKDIR /app/
 

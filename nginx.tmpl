@@ -67,6 +67,9 @@ proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
 proxy_set_header X-Forwarded-Ssl $proxy_x_forwarded_ssl;
 proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;
 
+add_header 'Access-Control-Allow-Origin' '*';
+add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+
 # Mitigate httpoxy attack (see README for details)
 proxy_set_header Proxy "";
 {{ end }}
@@ -78,6 +81,11 @@ server {
 	{{ if $enable_ipv6 }}
 	listen [::]:80;
 	{{ end }}
+	error_page 503 @maintenance;
+    	location @maintenance {
+                rewrite ^(.*)$ /50x.html break;
+    	}
+
 	access_log /var/log/nginx/access.log vhost;
 	return 503;
 }
