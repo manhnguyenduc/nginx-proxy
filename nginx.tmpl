@@ -192,6 +192,15 @@ server {
 	ssl_certificate /etc/nginx/certs/{{ (printf "%s.crt" $cert) }};
 	ssl_certificate_key /etc/nginx/certs/{{ (printf "%s.key" $cert) }};
 
+	location ~ /\. {
+                log_not_found off;
+                deny all;
+        }
+
+    location ~ /\.git {
+            deny all;
+    }
+
 	{{ if (exists (printf "/etc/nginx/certs/%s.dhparam.pem" $cert)) }}
 	ssl_dhparam {{ printf "/etc/nginx/certs/%s.dhparam.pem" $cert }};
 	{{ end }}
@@ -242,6 +251,15 @@ server {
 	{{ else if (exists "/etc/nginx/vhost.d/default") }}
 	include /etc/nginx/vhost.d/default;
 	{{ end }}
+
+    location ~ /\. {
+                log_not_found off;
+                deny all;
+        }
+
+    location ~ /\.git {
+            deny all;
+    }
 
 	location / {
 		{{ if eq $proto "uwsgi" }}
